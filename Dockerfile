@@ -18,8 +18,10 @@ COPY poetry.lock pyproject.toml ./
 RUN /home/app/.poetry/bin/poetry install
 
 USER root
+RUN mkdir -p /opt/project
+WORKDIR /opt/project
 COPY . .
 RUN chown -R app:app .
 USER app
 
-ENTRYPOINT ["/home/app/src/entrypoint.sh"]
+ENTRYPOINT ["/opt/project/entrypoint.sh"]

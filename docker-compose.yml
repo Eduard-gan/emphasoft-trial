@@ -12,6 +12,7 @@ services:
     restart: unless-stopped
     image: postgres:13.1
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    network_mode: bridge
     volumes:
       - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
       - postgres_data:/var/lib/postgresql/data
@@ -23,6 +24,7 @@ services:
     image: rabbitmq:3.8-management
     container_name: broker
     hostname: broker
+    network_mode: bridge
     restart: unless-stopped
     ports:
       - 15672:15672
@@ -35,6 +37,7 @@ services:
     container_name: runserver
     hostname: runserver
     restart: unless-stopped
+    network_mode: bridge
     build: .
     command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     depends_on:
@@ -50,6 +53,7 @@ services:
   tests:
     container_name: tests
     hostname: tests
+    network_mode: bridge
     build: .
     command: python manage.py test
     depends_on:
