@@ -1,0 +1,61 @@
+version: '3.8'
+
+volumes:
+  postgres_data:
+  broker_data:
+
+services:
+
+  db:
+    container_name: db
+    hostname: db
+    restart: unless-stopped
+    image: postgres:13.1
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    volumes:
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    env_file: .env
+
+  broker:
+    image: rabbitmq:3.8-management
+    container_name: broker
+    hostname: broker
+    restart: unless-stopped
+    ports:
+      - 15672:15672
+      - 5672:5672
+    volumes:
+      - broker_data:/var/lib/rabbitmq
+    env_file: .env
+
+  runserver:
+    container_name: runserver
+    hostname: runserver
+    restart: unless-stopped
+    build: .
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - db
+      - broker
+    links:
+      - db
+      - broker
+    ports:
+      - 8000:8000
+    env_file: .env
+
+  tests:
+    container_name: tests
+    hostname: tests
+    build: .
+    command: python manage.py test
+    depends_on:
+      - db
+      - broker
+    links:
+      - db
+      - broker
+    env_file: .env
