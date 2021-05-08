@@ -23,6 +23,6 @@ schema_view = get_schema_view(
 )
 
 urlpatterns += [
-    path(r'swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-   path('api-token-auth/', views.obtain_auth_token),
+   path(r'swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+   path('api-token-auth/', views.obtain_auth_token, name='obtain_auth_token'),
 ]
